@@ -1,0 +1,105 @@
+
+
+/* Encabezado rojo institucional */
+header{
+    background-color: #9E1B1F; /* Rojo USCO */
+    color: white;
+    text-align: center;
+    padding: 35px;
+}
+
+/* Barra beige institucional */
+.sub-bar{
+    background-color: #D8C7A0; /* Beige oficial */
+    color: #9E1B1F;
+    text-align: center;
+    padding: 12px;
+    font-weight: bold;
+}
+
+/* Cuerpo general */
+body{
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* Secciones */
+section{
+    background-color: white;
+    width: 85%;
+    margin: 40px auto;
+    padding: 35px;
+    border-top: 6px solid #9E1B1F;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Títulos */
+h2{
+    color: #9E1B1F;
+    margin-bottom: 15px;
+}
+
+/* Texto */
+p{
+    text-align: justify;
+    line-height: 1.7;
+    color: #333;
+}
+
+/* Botón */
+.boton{
+    background-color: #9E1B1F;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    cursor: pointer;
+    margin-top: 15px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.boton:hover{
+    background-color: #7A1417;
+}
+
+/* Footer */
+footer{
+    background-color: #9E1B1F;
+    color: white;
+    text-align: center;
+    padding: 18px;
+    margin-top: 40px;
+}
+
+/* ===== MENÚ DE NAVEGACIÓN ===== */
+
+.menu{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.menu__link{
+    text-decoration: none;
+    color: white;
+    background-color: #7A1417; /* rojo más oscuro */
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+.menu__link:hover{
+    background-color: #B32428; /* rojo más claro al pasar mouse */
+    transform: translateY(-2px);
+}
+
+.menu__link--active{
+    background-color: #ffffff;
+    color: #9E1B1F;
+    border: 2px solid #ffffff;
+}
