@@ -2,43 +2,292 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Análisis de Datos</title>
+    <title>Análisis de Datos – Monitoreo de Temperatura y Humedad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+        <style>
+        .upload-zone {
+            border: 3px dashed var(--dorado);
+            border-radius: 16px;
+            padding: 50px 30px;
+            text-align: center;
+            background: var(--dorado-fondo);
+            cursor: pointer;
+            transition: all var(--transicion);
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            background: #fdf0cc;
+            border-color: var(--rojo);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(158,27,31,0.12);
+        }
+        .upload-icon { font-size: 56px; margin-bottom: 16px; }
+        .upload-zone h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--rojo);
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .upload-zone p { color: var(--texto-suave); font-size: 14px; margin: 0; text-align: center; }
+        #fileInput { display: none; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 28px 0;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 16px;
+            text-align: center;
+            border-top: 4px solid var(--rojo);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+            transition: transform var(--transicion);
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card .val {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--rojo);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .stat-card .lbl {
+            font-size: 12px;
+            color: var(--texto-suave);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .chart-wrapper {
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            margin: 24px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+            border-left: 5px solid var(--rojo);
+        }
+        .chart-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--rojo);
+            font-size: 18px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chart-title::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 22px;
+            background: linear-gradient(to bottom, var(--dorado), var(--rojo));
+            border-radius: 3px;
+        }
+        .chart-subtitle {
+            font-size: 13px;
+            color: var(--texto-suave);
+            margin-bottom: 20px;
+        }
+        .chart-scroll-wrap {
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 100%;
+            padding-bottom: 6px;
+            cursor: grab;
+        }
+        .chart-scroll-wrap:active { cursor: grabbing; }
+        .chart-scroll-wrap canvas {
+            min-width: 1100px !important;
+            height: 360px !important;
+            max-height: none !important;
+        }
+
+        .analysis-block {
+            background: var(--dorado-fondo);
+            border-radius: 12px;
+            padding: 28px 32px;
+            margin-top: 28px;
+            border: 1.5px solid var(--dorado-claro);
+        }
+        .analysis-block h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--rojo);
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+        .analysis-block p {
+            font-size: 15px;
+            line-height: 1.85;
+            color: var(--texto);
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        .analysis-block p:last-child { margin-bottom: 0; }
+
+        #resultados { display: none; }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--rojo);
+            font-weight: 600;
+            display: none;
+        }
+
+        .file-loaded {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-top: 14px;
+        }
+    </style>
 </head>
 <body>
 
-<header>
-    <h1>Monitoreo de Temperatura Ambiental</h1>
-    <p>Sistema de análisis de una variable física</p>
-
-    <nav class="menu">
-        <a href="index.html" class="menu__link">Inicio</a>
-        <a href="dispositivos.html" class="menu__link">Dispositivos</a>
-        <a href="circuito.html" class="menu__link">Circuito</a>
-        <a href="codificacion.html" class="menu__link">Codificación</a>
-        <a href="analisis-datos.html" class="menu__link menu__link--active">Análisis de Datos</a>
-    </nav>
-</header>
-
 <div class="sub-bar">
-    Universidad Surcolombiana
+    Universidad Surcolombiana &nbsp;|&nbsp; Proyecto Académico 2026
 </div>
 
-<section>
-    <h2>Análisis de Datos</h2>
-    <p>
-        Los datos recolectados se organizan en tablas y gráficos
-        para identificar variaciones de temperatura.
-    </p>
-    <p>
-        Esto permite evaluar el confort térmico del aula
-        y proponer mejoras en ventilación o climatización.
-    </p>
-</section>
+<header>
+    <div class="logo-universidad">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/dc/Logo_de_la_Universidad_Surcolombiana.svg"
+             alt="Logo Universidad Surcolombiana">
+    </div>
+    <h1>
+        Diseño e Implementación de un Sistema de Monitoreo de Temperatura y Humedad
+        en Espacios Interiores mediante ESP32 y Sensor DHT22
+    </h1>
+</header>
+
+<nav class="navbar">
+    <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">🏠 Inicio</a></li>
+        <li><a href="dispositivos.html">🔌 Dispositivos</a></li>
+        <li><a href="circuito.html">⚡ Circuito</a></li>
+        <li><a href="codificacion.html">💻 Codificación</a></li>
+        <li><a href="analisis-datos.html" class="active">📊 Análisis de Datos</a></li>
+    </ul>
+</nav>
+
+<main>
+
+    <section>
+        <span class="badge">Resultados</span>
+        <h2>Análisis de Datos</h2>
+        <p>
+            Los datos recolectados por el sistema de monitoreo se almacenan en un archivo 
+            CSV en la tarjeta MicroSD. Esta sección permite cargar ese archivo directamente 
+            para visualizar las gráficas de temperatura y humedad registradas, junto con 
+            un análisis automático de los resultados obtenidos.
+        </p>
+        <p>
+            Selecciona el archivo <strong>datos.csv</strong> generado por el ESP32 
+            para comenzar el análisis.
+        </p>
+
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📂</div>
+            <h3>Cargar archivo CSV</h3>
+            <p>Haz clic aquí o arrastra tu archivo datos.csv</p>
+            <input type="file" id="fileInput" accept=".csv">
+        </div>
+        <div class="loading" id="loading">⏳ Procesando datos...</div>
+    </section>
+
+    <div id="resultados">
+
+        <section>
+            <span class="badge">Estadísticas Generales</span>
+            <h2>Resumen del Monitoreo</h2>
+            <p id="resumen-texto"></p>
+            <div class="stats-grid" id="statsGrid"></div>
+        </section>
+
+        <section>
+            <span class="badge">Gráfica 1</span>
+            <h2>Temperatura a lo Largo del Tiempo</h2>
+            <p>
+                La siguiente gráfica muestra la evolución de la temperatura registrada 
+                en el espacio interior durante el período de monitoreo. Permite identificar 
+                los momentos de mayor y menor temperatura a lo largo del día.
+            </p>
+            <div class="chart-wrapper">
+                <div class="chart-title">Temperatura (°C) vs Tiempo</div>
+                <div class="chart-subtitle">Lecturas cada 1 minuto — Sensor DHT22</div>
+                <div class="chart-scroll-wrap"><canvas id="chartTemp"></canvas></div>
+            </div>
+            <div class="analysis-block">
+                <h3>📋 Análisis de Temperatura</h3>
+                <div id="analisisTemp"></div>
+            </div>
+        </section>
+
+        <section>
+            <span class="badge">Gráfica 2</span>
+            <h2>Humedad Relativa a lo Largo del Tiempo</h2>
+            <p>
+                La siguiente gráfica muestra la evolución de la humedad relativa registrada 
+                durante el período de monitoreo. La humedad es inversamente proporcional 
+                a la temperatura en espacios cerrados sin ventilación.
+            </p>
+            <div class="chart-wrapper">
+                <div class="chart-title">Humedad Relativa (%) vs Tiempo</div>
+                <div class="chart-subtitle">Lecturas cada 1 minuto — Sensor DHT22</div>
+                <div class="chart-scroll-wrap"><canvas id="chartHum"></canvas></div>
+            </div>
+            <div class="analysis-block">
+                <h3>📋 Análisis de Humedad</h3>
+                <div id="analisisHum"></div>
+            </div>
+        </section>
+
+        <section>
+            <span class="badge">Gráfica 3</span>
+            <h2>Relación Temperatura vs Humedad</h2>
+            <p>
+                La gráfica de dispersión permite identificar la correlación existente 
+                entre temperatura y humedad relativa. En espacios cerrados sin ventilación 
+                se espera una relación inversa: a mayor temperatura, menor humedad relativa.
+            </p>
+            <div class="chart-wrapper">
+                <div class="chart-title">Dispersión — Temperatura vs Humedad</div>
+                <div class="chart-subtitle">Cada punto representa una lectura del sensor</div>
+                <canvas id="chartDisp"></canvas>
+            </div>
+            <div class="analysis-block">
+                <h3>📋 Análisis de Correlación</h3>
+                <div id="analisisDisp"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Conclusiones del Monitoreo</h2>
+            <div id="conclusiones"></div>
+        </section>
+
+    </div>
+
+</main>
 
 <footer>
-    <p>Proyecto Académico - Universidad Surcolombiana</p>
+    <p>Proyecto Académico &mdash; Ingeniería Electrónica &mdash; Universidad Surcolombiana &mdash; 2026</p>
 </footer>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="analisis.js"></script>
 </body>
 </html>

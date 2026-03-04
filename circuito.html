@@ -2,43 +2,190 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Circuito</title>
+    <title>Monitoreo de Temperatura y Humedad - ESP32 DHT22</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-    <h1>Monitoreo de Temperatura Ambiental</h1>
-    <p>Sistema de análisis de una variable física</p>
-
-    <nav class="menu">
-        <a href="index.html" class="menu__link">Inicio</a>
-        <a href="dispositivos.html" class="menu__link">Dispositivos</a>
-        <a href="circuito.html" class="menu__link menu__link--active">Circuito</a>
-        <a href="codificacion.html" class="menu__link">Codificación</a>
-        <a href="analisis-datos.html" class="menu__link">Análisis de Datos</a>
-    </nav>
-</header>
-
 <div class="sub-bar">
-    Universidad Surcolombiana
+    Universidad Surcolombiana &nbsp;|&nbsp; Proyecto Académico 2026
 </div>
 
-<section>
-    <h2>Diseño del Circuito</h2>
-    <p>
-        El circuito conecta el sensor de temperatura al microcontrolador
-        mediante entradas analógicas o digitales.
-    </p>
-    <p>
-        Se incluye alimentación eléctrica estable y protección básica
-        para garantizar lecturas confiables.
-    </p>
-</section>
+<header>
+    <div class="logo-universidad">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/dc/Logo_de_la_Universidad_Surcolombiana.svg"
+             alt="Logo Universidad Surcolombiana">
+    </div>
+    <h1>
+    Diseño e Implementación de un Sistema de Monitoreo de Temperatura y Humedad 
+    en Espacios Interiores mediante ESP32 y Sensor DHT22
+</h1>
+</header>
+
+<nav class="navbar">
+    <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">🏠 Inicio</a></li>
+        <li><a href="dispositivos.html">🔌 Dispositivos</a></li>
+        <li><a href="circuito.html" class="active">⚡ Circuito</a></li>
+        <li><a href="codificacion.html">💻 Codificación</a></li>
+        <li><a href="analisis-datos.html">📊 Análisis de Datos</a></li>
+    </ul>
+</nav>
+
+<main>
+
+    <section>
+        <span class="badge">Diseño Electrónico</span>
+        <h2>Diseño del Circuito</h2>
+        <p>
+            El circuito fue diseñado y validado previamente en el simulador 
+            Wokwi, una plataforma online que permite emular el comportamiento 
+            real del ESP32 junto con sus periféricos antes de realizar el 
+            montaje físico. Esto permitió verificar las conexiones y el 
+            funcionamiento del código sin riesgo de dañar los componentes.
+        </p>
+
+        <!-- IMAGEN SIMULADOR -->
+        <div class="circuit-img-block">
+            <img src="img/wokwi.png" alt="Simulación del circuito en Wokwi">
+            <p class="img-caption">
+                Figura 1. Simulación del circuito en Wokwi. Se observan el ESP32, 
+                el sensor DHT22 y el módulo MicroSD con sus respectivas conexiones 
+                antes del montaje físico.
+            </p>
+        </div>
+
+        <p>
+            Una vez validado el diseño en simulación, se procedió al montaje 
+            físico del circuito. El resultado fue un sistema funcional, compacto 
+            y estable, capaz de realizar lecturas continuas de temperatura y 
+            humedad y almacenarlas en la tarjeta SD de forma confiable.
+        </p>
+
+        <!-- IMAGEN CIRCUITO REAL -->
+        <div class="circuit-img-block">
+            <img src="img/circuito_real.jpeg" alt="Circuito montado y funcionando">
+            <p class="img-caption">
+                Figura 2. Circuito físico montado y en operación. El sistema integra 
+                el ESP32, el sensor DHT22 y el módulo MicroSD, demostrando la 
+                viabilidad de implementar soluciones de monitoreo ambiental de bajo 
+                costo con componentes de fácil adquisición.
+            </p>
+        </div>
+    </section>
+
+    <!-- CONEXIONES -->
+    <section>
+        <h2>Diagrama de Conexiones</h2>
+        <p>
+            A continuación se detallan las conexiones físicas entre los componentes. 
+            Se eligieron pines específicos del ESP32 por razones técnicas que se 
+            explican en cada caso.
+        </p>
+
+        <h4 class="conn-title">🌡️ DHT22 → ESP32</h4>
+        <div class="circuit-info">
+            <div class="circuit-pin">
+                <span class="pin-badge">VCC</span>
+                <span class="pin-desc">
+                    DHT22 VCC → ESP32 3.3V. El DHT22 opera entre 3.3V y 6V, 
+                    por lo que 3.3V es suficiente y evita usar un regulador adicional.
+                </span>
+            </div>
+            <div class="circuit-pin">
+    <span class="pin-badge">VCC → 3.3V</span>
+    <span class="pin-desc">Opera entre 3.3V y 6V, sin necesidad de regulador adicional.</span>
+</div>
+<div class="circuit-pin">
+    <span class="pin-badge">GND → GND</span>
+    <span class="pin-desc">Tierra común para que la señal digital sea interpretada correctamente.</span>
+</div>
+<div class="circuit-pin">
+    <span class="pin-badge">DATA → GPIO 4</span>
+    <span class="pin-desc">Pin de propósito general, no interfiere con los pines SPI del módulo SD.</span>
+</div>
+        </div>
+
+        <h4 class="conn-title">💾 Módulo MicroSD → ESP32 (SPI)</h4>
+        <div class="circuit-info">
+            <div class="circuit-pin">
+                <span class="pin-badge">VCC</span>
+                <span class="pin-desc">
+                    Módulo SD VCC → ESP32 3.3V. El módulo acepta 3.3V en su 
+                    interfaz SPI, compatible directamente con los GPIO del ESP32.
+                </span>
+            </div>
+            <div class="circuit-pin">
+    <span class="pin-badge">VCC → 3.3V</span>
+    <span class="pin-desc">Interfaz SPI compatible directamente con los GPIO del ESP32.</span>
+</div>
+<div class="circuit-pin">
+    <span class="pin-badge">GND → GND</span>
+    <span class="pin-desc">Todos los GND del circuito conectados en común para referencia estable.</span>
+</div>
+<div class="circuit-pin">
+    <span class="pin-badge">MISO → GPIO 19</span>
+    <span class="pin-desc">Pin MISO predeterminado del bus SPI, simplifica la configuración en código.</span>
+</div>
+<div class="circuit-pin">
+    <span class="pin-badge">MOSI → GPIO 23</span>
+    <span class="pin-desc">Pin MOSI predeterminado del ESP32 para envío de datos hacia el módulo SD.</span>
+</div>
+<div class="circuit-pin">
+    <span class="pin-badge">SCK → GPIO 18</span>
+    <span class="pin-desc">Pin de reloj predeterminado, sincroniza la transmisión de datos por SPI.</span>
+</div>
+<div class="circuit-pin">
+    <span class="pin-badge">CS → GPIO 5</span>
+    <span class="pin-desc">Pin SS predeterminado, permite activar el módulo SD de forma independiente.</span>
+</div>
+        </div>
+    </section>
+
+    <!-- CONSIDERACIONES -->
+    <section>
+        <h2>Consideraciones de Diseño</h2>
+        <p>
+            Durante el desarrollo del proyecto se presentaron dificultades con el 
+            sensor seleccionado inicialmente, el KY-028, cuyo funcionamiento resultó 
+            ser impreciso e inconsistente para las necesidades del sistema.
+        </p>
+        <p>
+            El KY-028 es un módulo basado en un termistor NTC de 10kΩ que entrega 
+            una señal analógica. Para obtener la temperatura en grados Celsius era 
+            necesario realizar una conversión matemática en el código asumiendo una 
+            constante Beta del termistor, un valor que varía según el fabricante y 
+            que no siempre está documentado con precisión. Esto generaba lecturas 
+            inestables y poco confiables, haciendo el sensor poco práctico para 
+            un sistema de monitoreo que requiere datos consistentes.
+        </p>
+        <p>
+            Ante esta situación se optó por reemplazarlo con el sensor DHT22, 
+            una solución significativamente superior para este tipo de aplicaciones. 
+            A diferencia del KY-028, el DHT22 entrega directamente una señal digital 
+            calibrada de fábrica, eliminando por completo la necesidad de conversiones 
+            manuales o asumir constantes del material. Además mide simultáneamente 
+            temperatura y humedad relativa con una precisión de ±0.5°C y ±2%~5% RH, 
+            en un rango de -40°C a 125°C, características muy superiores al KY-028 
+            que solo mide temperatura y con una precisión dependiente de la calibración 
+            manual. Su protocolo de comunicación de un solo hilo también simplifica 
+            notablemente el cableado y el código necesario para su lectura.
+        </p>
+    </section>
+
+</main>
 
 <footer>
-    <p>Proyecto Académico - Universidad Surcolombiana</p>
+    <p>Proyecto Académico &mdash; Ingeniería Electrónica &mdash; Universidad Surcolombiana &mdash; 2026</p>
 </footer>
 
+<script>
+function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("show");
+    document.body.classList.toggle("menu-open");
+}
+</script>
 </body>
 </html>

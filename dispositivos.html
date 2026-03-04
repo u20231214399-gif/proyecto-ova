@@ -2,43 +2,149 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dispositivos</title>
+     <title>Monitoreo de Temperatura y Humedad - ESP32 DHT22</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-    <h1>Monitoreo de Temperatura Ambiental</h1>
-    <p>Sistema de análisis de una variable física</p>
-
-    <nav class="menu">
-        <a href="index.html" class="menu__link">Inicio</a>
-        <a href="dispositivos.html" class="menu__link menu__link--active">Dispositivos</a>
-        <a href="circuito.html" class="menu__link">Circuito</a>
-        <a href="codificacion.html" class="menu__link">Codificación</a>
-        <a href="analisis-datos.html" class="menu__link">Análisis de Datos</a>
-    </nav>
-</header>
-
 <div class="sub-bar">
-    Universidad Surcolombiana
+    Universidad Surcolombiana &nbsp;|&nbsp; Proyecto Académico 2026
 </div>
 
-<section>
-    <h2>Dispositivos Utilizados</h2>
-    <p>
-        El sistema utiliza un sensor de temperatura para capturar datos ambientales
-        dentro del aula universitaria.
-    </p>
-    <p>
-        Se emplea un microcontrolador para procesar la información y enviarla
-        a la plataforma web para su visualización.
-    </p>
-</section>
+<header>
+    <div class="logo-universidad">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/dc/Logo_de_la_Universidad_Surcolombiana.svg"
+             alt="Logo Universidad Surcolombiana">
+    </div>
+    <h1>
+    Diseño e Implementación de un Sistema de Monitoreo de Temperatura y Humedad 
+    en Espacios Interiores mediante ESP32 y Sensor DHT22
+</h1>
+</header>
+
+<nav class="navbar">
+    <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">🏠 Inicio</a></li>
+        <li><a href="dispositivos.html" class="active">🔌 Dispositivos</a></li>
+        <li><a href="circuito.html">⚡ Circuito</a></li>
+        <li><a href="codificacion.html">💻 Codificación</a></li>
+        <li><a href="analisis-datos.html">📊 Análisis de Datos</a></li>
+    </ul>
+</nav>
+
+<main>
+
+    <section>
+        <span class="badge">Hardware del Proyecto</span>
+        <h2>Dispositivos Utilizados</h2>
+        <p>
+            El sistema está compuesto por tres componentes principales: 
+            un microcontrolador ESP32, un sensor de temperatura y humedad DHT22, 
+            y un módulo de tarjeta SD para el almacenamiento local de los datos recolectados.
+        </p>
+
+        <!-- ESP32 -->
+        <div class="device-card-full">
+            <div class="device-card-img">
+                <img src="https://programarfacil.com/wp-content/uploads/2021/02/24-ESP32-DEVKIT-DOIT.jpg" alt="ESP32 C V4">
+            </div>
+            <div class="device-card-info">
+                <h3>ESP32 C V4</h3>
+                <p>
+                    Microcontrolador de doble núcleo con conectividad WiFi y Bluetooth integrada. 
+                    Es el cerebro del sistema, encargado de leer el sensor, procesar los datos 
+                    y almacenarlos en la tarjeta SD.
+                </p>
+                <h4>Especificaciones Técnicas</h4>
+                <ul class="specs-list">
+                    <li><strong>Procesador:</strong> Xtensa dual-core 32-bit LX6 hasta 240 MHz</li>
+                    <li><strong>Memoria ROM:</strong> 448 KB</li>
+                    <li><strong>Memoria SRAM:</strong> 520 KB</li>
+                    <li><strong>WiFi:</strong> 802.11 b/g/n — 2412 ~ 2484 MHz</li>
+                    <li><strong>Bluetooth:</strong> V4.2 BR/EDR y BLE</li>
+                    <li><strong>Flash:</strong> 4 MB SPI integrado</li>
+                    <li><strong>Voltaje de operación:</strong> 3.3V – 5V (GPIO a 3.3V)</li>
+                    <li><strong>Temperatura de operación:</strong> -40°C a 85°C</li>
+                    <li><strong>Periféricos:</strong> UART, SPI, I2C, I2S, GPIO, ADC, DAC, PWM, RTC, entre otros</li>
+                </ul>
+                <a href="https://documentation.espressif.com/esp32_datasheet_en.pdf" target="_blank" class="btn-spec">
+                    📄 Ver especificaciones completas
+                </a>
+            </div>
+        </div>
+
+        <!-- DHT22 -->
+        <div class="device-card-full">
+            <div class="device-card-img">
+                <img src="https://electronilab.co/wp-content/uploads/2022/03/Modulo-Sensor-DHT22-AM2302-Temperatura-y-Humedad-6.webp" alt="Sensor DHT22">
+            </div>
+            <div class="device-card-info">
+                <h3>Sensor DHT22 / AM2302</h3>
+                <p>
+                    Sensor digital de temperatura y humedad de alta precisión. 
+                    Permite registrar ambas variables ambientales con una sola conexión 
+                    de datos al microcontrolador.
+                </p>
+                <h4>Especificaciones Técnicas</h4>
+                <ul class="specs-list">
+                    <li><strong>Voltaje de operación:</strong> 3.3V – 6V</li>
+                    <li><strong>Corriente de operación:</strong> 2.5 mA</li>
+                    <li><strong>Señal de salida:</strong> Digital — Bus de datos</li>
+                    <li><strong>Rango de humedad:</strong> 0% RH ~ 100% RH</li>
+                    <li><strong>Rango de temperatura:</strong> -40°C ~ 125°C</li>
+                    <li><strong>Precisión de humedad:</strong> ±2% ~ 5%</li>
+                    <li><strong>Velocidad de muestreo:</strong> 0.5 Hz (una lectura cada 2 segundos)</li>
+                    <li><strong>Temperatura de operación:</strong> -40°C ~ 80°C</li>
+                    <li><strong>Pines:</strong> VDD, DATA, NULL, GND</li>
+                </ul>
+                <a href="https://cdn-shop.adafruit.com/datasheets/DHT22.pdf" target="_blank" class="btn-spec">
+                    📄 Ver especificaciones completas
+                </a>
+            </div>
+        </div>
+
+        <!-- MÓDULO SD -->
+        <div class="device-card-full">
+            <div class="device-card-img">
+                <img src="https://cdnx.jumpseller.com/mactornica/image/9779031/1.jpg?1628879430" alt="Módulo MicroSD">
+            </div>
+            <div class="device-card-info">
+                <h3>Módulo MicroSD Card Adapter</h3>
+                <p>
+                    Módulo de almacenamiento que permite al ESP32 guardar los registros 
+                    de temperatura y humedad directamente en una tarjeta microSD, 
+                    asegurando la persistencia de los datos sin depender de internet.
+                </p>
+                <h4>Especificaciones Técnicas</h4>
+                <ul class="specs-list">
+                    <li><strong>Voltaje de operación:</strong> 4.5V – 5.5V</li>
+                    <li><strong>Voltaje interfaz SPI:</strong> 3.3V – 5V</li>
+                    <li><strong>Corriente de operación:</strong> 200 µA – 200 mA</li>
+                    <li><strong>Comunicación:</strong> SPI</li>
+                    <li><strong>Memoria soportada:</strong> uSD clásica hasta 2 GB</li>
+                    <li><strong>Memoria SDHC:</strong> Micro SDHC hasta 32 GB</li>
+                </ul>
+                <a href="https://naylampmechatronics.com/blog/38_tutorial-arduino-y-memoria-sd-y-micro-sd.html" target="_blank" class="btn-spec">
+                    📄 Ver especificaciones completas
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+</main>
 
 <footer>
-    <p>Proyecto Académico - Universidad Surcolombiana</p>
+    <p>Proyecto Académico &mdash; Ingeniería Electrónica &mdash; Universidad Surcolombiana &mdash; 2026</p>
 </footer>
 
+<script>
+function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("show");
+    document.body.classList.toggle("menu-open");
+}
+</script>
 </body>
 </html>

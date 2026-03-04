@@ -2,42 +2,258 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Codificación</title>
+    <title>Monitoreo de Temperatura y Humedad - ESP32 DHT22</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-    <h1>Monitoreo de Temperatura Ambiental</h1>
-    <p>Sistema de análisis de una variable física</p>
-
-    <nav class="menu">
-        <a href="index.html" class="menu__link">Inicio</a>
-        <a href="dispositivos.html" class="menu__link">Dispositivos</a>
-        <a href="circuito.html" class="menu__link">Circuito</a>
-        <a href="codificacion.html" class="menu__link menu__link--active">Codificación</a>
-        <a href="analisis-datos.html" class="menu__link">Análisis de Datos</a>
-    </nav>
-</header>
-
 <div class="sub-bar">
-    Universidad Surcolombiana
+    Universidad Surcolombiana &nbsp;|&nbsp; Proyecto Académico 2026
 </div>
 
-<section>
-    <h2>Codificación del Sistema</h2>
+<header>
+    <div class="logo-universidad">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/dc/Logo_de_la_Universidad_Surcolombiana.svg"
+             alt="Logo Universidad Surcolombiana">
+    </div>
+   <h1>
+    Diseño e Implementación de un Sistema de Monitoreo de Temperatura y Humedad 
+    en Espacios Interiores mediante ESP32 y Sensor DHT22
+</h1>
+</header>
+
+<nav class="navbar">
+    <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">🏠 Inicio</a></li>
+        <li><a href="dispositivos.html">🔌 Dispositivos</a></li>
+        <li><a href="circuito.html">⚡ Circuito</a></li>
+        <li><a href="codificacion.html" class="active">💻 Codificación</a></li>
+        <li><a href="analisis-datos.html">📊 Análisis de Datos</a></li>
+    </ul>
+</nav>
+
+<main>
+
+    <section>
+        <span class="badge">Programación</span>
+        <h2>Codificación del Sistema</h2>
+        <p>
+            El sistema fue programado en lenguaje C++ utilizando el entorno 
+            de desarrollo Arduino IDE, aprovechando su amplio ecosistema de 
+            librerías compatibles con el ESP32. El código integra cuatro 
+            librerías principales que trabajan en conjunto para lograr 
+            la adquisición, sincronización y almacenamiento de los datos.
+        </p>
+
+        <h4 class="conn-title">📦 Librerías Utilizadas</h4>
+        <div class="circuit-info">
+            <div class="circuit-pin">
+                <span class="pin-badge">DHT.h</span>
+                <span class="pin-desc">Maneja la comunicación con el sensor DHT22, facilitando la lectura de temperatura y humedad sin necesidad de implementar el protocolo manualmente.</span>
+            </div>
+            <div class="circuit-pin">
+                <span class="pin-badge">SD.h</span>
+                <span class="pin-desc">Permite la lectura y escritura de archivos en la tarjeta microSD mediante el protocolo SPI, gestionando la apertura, escritura y cierre del archivo CSV.</span>
+            </div>
+            <div class="circuit-pin">
+                <span class="pin-badge">SPI.h</span>
+                <span class="pin-desc">Habilita el bus de comunicación SPI del ESP32, necesario para el funcionamiento del módulo de tarjeta SD.</span>
+            </div>
+            <div class="circuit-pin">
+                <span class="pin-badge">WiFi.h</span>
+                <span class="pin-desc">Gestiona la conexión inalámbrica del ESP32 a la red WiFi local para acceder al servidor de tiempo NTP.</span>
+            </div>
+            <div class="circuit-pin">
+                <span class="pin-badge">time.h</span>
+                <span class="pin-desc">Permite obtener y formatear la hora y fecha real desde un servidor NTP en internet, garantizando marcas de tiempo precisas en cada registro.</span>
+            </div>
+        </div>
+
+        <h4 class="conn-title">💻 Código Fuente</h4>
+        <div class="code-block">
+<pre><span class="cm">// ================================================
+// Sistema de Monitoreo de Temperatura y Humedad
+// ESP32 + DHT22 + Módulo MicroSD
+// Universidad Surcolombiana – 2026
+// ================================================</span>
+
+<span class="kw">#include</span> <span class="str">&lt;SPI.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;SD.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;DHT.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;WiFi.h&gt;</span>
+<span class="kw">#include</span> <span class="str">"time.h"</span>
+
+<span class="cm">// ── Pines ──────────────────────────────────────</span>
+<span class="kw">#define</span> SD_CS    <span class="num">5</span>
+<span class="kw">#define</span> DHTPIN   <span class="num">4</span>
+<span class="kw">#define</span> DHTTYPE  DHT22
+
+<span class="cm">// ── Credenciales WiFi ──────────────────────────</span>
+<span class="kw">const char</span>* ssid     = <span class="str">"TU_RED_WIFI"</span>;
+<span class="kw">const char</span>* password = <span class="str">"TU_CONTRASEÑA"</span>;
+
+<span class="cm">// ── Servidor NTP – Colombia GMT-5 ──────────────</span>
+<span class="kw">const char</span>* ntpServer         = <span class="str">"pool.ntp.org"</span>;
+<span class="kw">const long</span>  gmtOffset_sec     = <span class="num">-5</span> * <span class="num">3600</span>;
+<span class="kw">const int</span>   daylightOffset_sec = <span class="num">0</span>;
+
+DHT dht(DHTPIN, DHTTYPE);
+
+<span class="cm">// ── SETUP ──────────────────────────────────────</span>
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  Serial.<span class="fn">begin</span>(<span class="num">115200</span>);
+  <span class="fn">delay</span>(<span class="num">1000</span>);
+  dht.<span class="fn">begin</span>();
+
+  <span class="cm">// Conexión WiFi con límite de intentos</span>
+  Serial.<span class="fn">print</span>(<span class="str">"Conectando WiFi"</span>);
+  WiFi.<span class="fn">begin</span>(ssid, password);
+
+  <span class="kw">int</span> intentos = <span class="num">0</span>;
+  <span class="kw">while</span> (WiFi.<span class="fn">status</span>() != WL_CONNECTED && intentos < <span class="num">20</span>) {
+    <span class="fn">delay</span>(<span class="num">500</span>);
+    Serial.<span class="fn">print</span>(<span class="str">"."</span>);
+    intentos++;
+  }
+
+  <span class="kw">if</span> (WiFi.<span class="fn">status</span>() == WL_CONNECTED) {
+    Serial.<span class="fn">println</span>(<span class="str">"\nWiFi conectado"</span>);
+    <span class="fn">configTime</span>(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  } <span class="kw">else</span> {
+    Serial.<span class="fn">println</span>(<span class="str">"\nSin WiFi - continuando sin hora"</span>);
+  }
+
+  <span class="cm">// Inicializar tarjeta SD</span>
+  <span class="kw">if</span> (!SD.<span class="fn">begin</span>(SD_CS)) {
+    Serial.<span class="fn">println</span>(<span class="str">"Error iniciando SD"</span>);
+    <span class="kw">return</span>;
+  }
+  Serial.<span class="fn">println</span>(<span class="str">"SD lista"</span>);
+
+  <span class="cm">// Crear archivo con encabezado si no existe</span>
+  <span class="kw">if</span> (!SD.<span class="fn">exists</span>(<span class="str">"/datos.csv"</span>)) {
+    File archivo = SD.<span class="fn">open</span>(<span class="str">"/datos.csv"</span>, FILE_WRITE);
+    <span class="kw">if</span> (archivo) {
+      archivo.<span class="fn">println</span>(<span class="str">"Fecha,Hora,Temperatura,Humedad"</span>);
+      archivo.<span class="fn">close</span>();
+    }
+  }
+}
+
+<span class="cm">// ── LOOP ───────────────────────────────────────</span>
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">float</span> temperatura = dht.<span class="fn">readTemperature</span>();
+  <span class="kw">float</span> humedad     = dht.<span class="fn">readHumidity</span>();
+
+  <span class="cm">// Validar lectura del sensor</span>
+  <span class="kw">if</span> (<span class="fn">isnan</span>(temperatura) || <span class="fn">isnan</span>(humedad)) {
+    Serial.<span class="fn">println</span>(<span class="str">"Error leyendo DHT22"</span>);
+    <span class="fn">delay</span>(<span class="num">2000</span>);
+    <span class="kw">return</span>;
+  }
+
+  <span class="cm">// Obtener fecha y hora del servidor NTP</span>
+<span class="cm">// Si no hay conexión, usa el reloj interno del ESP32</span>
+  <span class="kw">struct</span> tm timeinfo;
+  <span class="kw">if</span> (!<span class="fn">getLocalTime</span>(&timeinfo)) {
+    Serial.<span class="fn">println</span>(<span class="str">"Sin hora NTP - usando hora interna"</span>);
+  }
+
+  <span class="kw">char</span> fecha[<span class="num">11</span>];
+  <span class="kw">char</span> hora[<span class="num">9</span>];
+  <span class="fn">strftime</span>(fecha, <span class="kw">sizeof</span>(fecha), <span class="str">"%Y-%m-%d"</span>, &timeinfo);
+  <span class="fn">strftime</span>(hora,  <span class="kw">sizeof</span>(hora),  <span class="str">"%H:%M:%S"</span>, &timeinfo);
+
+  <span class="cm">// Mostrar en monitor serial</span>
+  Serial.<span class="fn">printf</span>(<span class="str">"%s %s | %.2f °C | %.2f %%\n"</span>,
+                fecha, hora, temperatura, humedad);
+
+  <span class="cm">// Guardar en tarjeta SD</span>
+  File archivo = SD.<span class="fn">open</span>(<span class="str">"/datos.csv"</span>, FILE_APPEND);
+  <span class="kw">if</span> (archivo) {
+    archivo.<span class="fn">printf</span>(<span class="str">"%s,%s,%.2f,%.2f\n"</span>,
+                   fecha, hora, temperatura, humedad);
+    archivo.<span class="fn">close</span>();
+  } <span class="kw">else</span> {
+    Serial.<span class="fn">println</span>(<span class="str">"Error abriendo CSV"</span>);
+  }
+
+  <span class="fn">delay</span>(<span class="num">60000</span>); <span class="cm">// lectura cada 1 minuto</span>
+}</pre>
+        </div>
+    </section>
+
+    <section>
+    <h2>Lógica de Funcionamiento</h2>
     <p>
-        El microcontrolador se programa para leer continuamente la temperatura
-        y enviar los datos a la plataforma web.
+        El sistema opera de forma autónoma una vez energizado. 
+        A continuación se describe primero cómo interactúan físicamente 
+        los componentes del circuito y luego cómo el código 
+        gestiona ese proceso.
     </p>
-    <p>
-        El código permite almacenar registros y analizarlos posteriormente.
-    </p>
+
+    <h4 class="conn-title">⚡ Funcionamiento del Circuito</h4>
+    <div class="circuit-info">
+        <div class="circuit-pin">
+            <span class="pin-badge">Energizado</span>
+            <span class="pin-desc">Al conectar la alimentación USB, el ESP32 distribuye 3.3V al sensor DHT22 y al módulo MicroSD a través de sus pines de potencia.</span>
+        </div>
+        <div class="circuit-pin">
+            <span class="pin-badge">Sensor</span>
+            <span class="pin-desc">El DHT22 comienza a medir temperatura y humedad del ambiente de forma continua. Cuando el ESP32 lo solicita, envía los datos digitalmente por el GPIO 4.</span>
+        </div>
+        <div class="circuit-pin">
+            <span class="pin-badge">Módulo SD</span>
+            <span class="pin-desc">El módulo MicroSD permanece en espera. Cuando el ESP32 necesita guardar un dato, activa el pin CS en GPIO 5 y transmite la información por el bus SPI usando los pines MOSI, MISO y SCK.</span>
+        </div>
+        <div class="circuit-pin">
+            <span class="pin-badge">WiFi</span>
+            <span class="pin-desc">La antena integrada del ESP32 se conecta a la red local para sincronizar el reloj interno con el servidor NTP, garantizando que cada registro tenga la fecha y hora real de Colombia.</span>
+        </div>
+        <div class="circuit-pin">
+            <span class="pin-badge">Sin WiFi</span>
+            <span class="pin-desc">Si no hay red disponible, el ESP32 utiliza su reloj interno con la última hora sincronizada. El sistema no se detiene y continúa registrando datos sin interrupciones.</span>
+        </div>
+    </div>
+
+    <h4 class="conn-title">💻 Funcionamiento del Código</h4>
+    <div class="circuit-info">
+        <div class="circuit-pin">
+            <span class="pin-badge">Setup</span>
+            <span class="pin-desc">Al encender el sistema se inicializa el sensor DHT22, se intenta la conexión WiFi con máximo 20 intentos, se sincroniza el reloj NTP y se prepara la tarjeta SD creando el archivo datos.csv con su encabezado si aún no existe.</span>
+        </div>
+        <div class="circuit-pin">
+            <span class="pin-badge">Lectura</span>
+            <span class="pin-desc">Cada 60 segundos el ESP32 solicita al DHT22 los valores de temperatura en °C y humedad relativa en %. Antes de continuar valida con isnan() que los datos sean correctos y no estén corruptos.</span>
+        </div>
+        <div class="circuit-pin">
+            <span class="pin-badge">Hora</span>
+            <span class="pin-desc">Se consulta el reloj interno del ESP32, sincronizado previamente con el servidor NTP pool.ntp.org. La fecha se formatea como YYYY-MM-DD y la hora como HH:MM:SS para compatibilidad con Excel y herramientas de análisis.</span>
+        </div>
+        <div class="circuit-pin">
+            <span class="pin-badge">Guardado</span>
+            <span class="pin-desc">Se abre el archivo datos.csv en modo FILE_APPEND, se escribe una línea con el formato Fecha, Hora, Temperatura, Humedad y se cierra inmediatamente para proteger los datos ante cualquier corte de energía.</span>
+        </div>
+        <div class="circuit-pin">
+            <span class="pin-badge">Espera</span>
+            <span class="pin-desc">El sistema espera 60 segundos antes de iniciar el siguiente ciclo de medición, generando exactamente un registro por minuto de forma indefinida mientras esté energizado.</span>
+        </div>
+    </div>
 </section>
 
+</main>
+
 <footer>
-    <p>Proyecto Académico - Universidad Surcolombiana</p>
+    <p>Proyecto Académico &mdash; Ingeniería Electrónica &mdash; Universidad Surcolombiana &mdash; 2026</p>
 </footer>
 
+<script>
+function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("show");
+    document.body.classList.toggle("menu-open");
+}
+</script>
 </body>
 </html>
